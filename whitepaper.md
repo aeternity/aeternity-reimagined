@@ -19,7 +19,6 @@ Our software is written in Erlang/OTP, a fault-tolerant and industrial-strength 
 
 This paper is broken into several parts. First we give a general overview of the system and the workings of the blockchain. Then we describe the mechanisms used for consensus, state channels, oracles and smart contracts. Finally, we describe governance by voting and the name system, then conclude with a forward outlook.
 
-
 ## Overview
 
 æternity is a decentralized, public blockchain that uses the GHOST consensus protocol, with Proof-of-Work (PoW) for security and Proof-of-Stake (PoS) for governance. æternity is an account-based system, like Ethereum, and does not use Bitcoin-style unspent transaction outputs (UTXO).
@@ -54,17 +53,15 @@ We elaborate on the above in the rest of the paper.
 
 ## Consensus 
 
-æternity uses a Proof-of-Work (PoW) consensus mechanism. Certain system variables will be determined via voting (staking?) (governance). For the PoW algorithm we use John Tromp's Cuckoo Cycle which is memory bound.
+æternity uses a Proof-of-Work (PoW) consensus mechanism. Certain system variables will be determined via voting (staking?) (governance). For the PoW algorithm we use John Tromp's Cuckoo Cycle.
 
 John Tromp writes about his work:
 
-_Cuckoo Cycle is an instantly verifiable memory bound PoW that is unique in being dominated by latency rather than computation. In that sense, mining Cuckoo Cycle is a form of ASIC mining where DRAM chips serve the application of randomly reading and writing billions of bits._
+	Cuckoo Cycle is an instantly verifiable memory bound PoW that is unique in being dominated by latency rather than computation. In that sense, mining Cuckoo Cycle is a form of ASIC mining where DRAM chips serve the application of randomly reading and writing billions of bits.
 
 The original Nakamoto consensus assumes that block propagation delays are negligible compared to the time required to generate a block. This assumption breaks once we start generating blocks every few seconds instead of minutes. In order to address this issue, we adopt GHOST, the Greedy Heaviest Observed Subtree protocol, a more secure and scalable system that is suitable for our needs. GHOST boosts block production by a factor of more than 40 with no security loss. 
 
 This protocol takes into account not just the “length” of the tree, calculated as the sum of difficulty, but the combined “length” of all blocks rooted at the current block. Blocks that are off the main chain still contribute to the chain’s irreversibility. GHOST exploits the work invested in conflicting blocks to enhance their ancestor’s security by making it harder to omit the ancestor from the main chain.
-
-We plan to switch to an even more scalable consensus protocol in the future. 
 
 ## State Channels
 
@@ -82,7 +79,7 @@ Each channel message carries an optional “timelock” that expires after a giv
 
 Each channel established between two parties (peer-to-peer) holds its own separate state. It’s often beneficial to establish a many-to-one channel, e.g. with many buyers connecting to a single seller. We enable this scenario by allowing opening of state channels to off-blockchain applications. These applications can be written in any language but still need to connect to a local blockchain node to listen for and reply to state channel events.
 
-We leave state channel networks for future work.
+We leave state channel network for future work.
 
 ## Oracles
 
