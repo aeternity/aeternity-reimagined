@@ -19,7 +19,6 @@ Our software is written in Erlang/OTP, a fault-tolerant and industrial-strength 
 
 This paper is broken into several parts. First we give a general overview of the system and the workings of the blockchain. Then we describe the mechanisms used for consensus, state channels, oracles and smart contracts. Finally, we describe governance by voting and the name system, then conclude with a forward outlook.
 
-
 ## Overview
 
 Aeternity is a decentralized and public blockchain that uses the GHOST consensus protocol, with proof of work (PoW) for security and proof of stake (PoS) for governance. Aeternity is an account-based system, like Ethereum, and does not use Bitcoin-style unspent transaction outputs (UTXO).
@@ -28,21 +27,19 @@ A blockchain is a public ledger that needs to be easily verifiable. Maintaining 
 
 Verifiers can hold a short digest (hash) of the data structure to verify each proof and compute the new digest that corresponds to the new account balances. The verifier can perform these checks and updates without trusting the miner and verifier storage is minimal. 32 bytes suffice for a digest and each proof is a few hundred bytes long.
 
-The Aeternity token (aeon) is used as payment for any resources that users consume on the platform, e.g. sending payments, using asking oracles, etc. The distribution of aeon in the genesis block will be determined by a smart contract hosted on Ethereum. Further aeon will be created via mining.
-
-We use Cuckoo Cycle as the ASIC-resistant mining algorithm to avoid centralizing mining power in the hands of a few large mining pools.
+The Aeternity token (aeon) is used as payment for any resources that users consume on the platform, e.g. sending payments, using oracles, etc. The distribution of aeon in the genesis block will be determined by a smart contract hosted on Ethereum. Further aeon will be created via mining.
 
 A blockchain needs to be highly performance and scalable if it’s to replace existing centralized mechanisms, e.g. VISA and MasterCard networks that process thousands of transactions per second and provide near-instant payment confirmations. 
 
-This can be achieved bydone faster consensus and quicker storing of data on the blockchain (on-chain scalability) as well as by not storing all the data on the blockchain (off-chain scalability). 
+This can be achieved by faster consensus and quicker storing of data on the blockchain (on-chain scalability) as well as by not storing all the data on the blockchain (off-chain scalability). 
 
-We propose to achieve offn-chain scalability by using state channels where only the channel opening and closing data is stored on the blockchain and smart contracts and data can be exchanged privately and securely between two parties, with no limitation on the speed of the data exchange. 
+We propose to achieve off-chain scalability by using state channels where only the channel opening and closing data is stored on the blockchain and smart contracts and data can be exchanged privately and securely between two parties, with no limitation on the speed of the data exchange. 
 
 We are already hard at work on the design of a faster consensus protocol and a sharding mechanism, with launch planned after the release of our mainnet.
 
-Ethereum’s Solidity is the most popular smart contracts language at this time and plenty of programmers are familiar with it. We make it easy to migrate to Aeternity by running Ethereum smart contracts without connecting to or being part of the Ethereum network. At the same time, it has been proven that Solidity is not the safest smart contracts language. We plan to release a safer and easier to verify smart contracts language after launching the mainnet.
+Ethereum’s Solidity is the most popular smart contract language at this time and plenty of programmers are familiar with it. We make it easy to migrate to Aeternity by running Ethereum smart contracts without connecting to or being part of the Ethereum network. At the same time, it has been proven that Solidity is not the safest smart contracts language. We plan to release a safer and easier to verify smart contracts language after launching the mainnet.
 
-EVM smart contracts are very limited by the fact that they have no way to access data that is not present on the blockchain. This restriction has been alleviated bypossibilities unless they can access the real-world via external data providers (oracles), which publish data on the blockchain, to make it available to smart contracts. A lot of the current oracle designs focus on ensuring the oracle answer is true  but do so at the expense of flexibilityusability. Knowing whether or not X is the president is mostly important to a narrow segment of blockchain users, e.g. those interested in betting on the US presidential election. 
+EVM smart contracts are limited by the fact that they have no way to access data that is not present on the blockchain. This restriction has been alleviated byexternal data providers (oracles), which publish data on the blockchain, to make it available to smart contracts. A lot of the current oracle designs focus on ensuring the oracle answer is true  but do so at the expense of flexibility.
 
 We provide much more flexible and general oracles, making it possible to bring in current weather, asset prices, logistics information, etc. to smart contracts running on Aeternity, rather than yes or no (binary) answers. This makes it possible to build a host of applications on top of Aeternity, not just prediction markets.
 
@@ -54,23 +51,21 @@ We elaborate on the above in the rest of the paper.
 
 ## Consensus 
 
-Aeternity uses a Proof-of-Work (PoW) consensus mechanism. Certain system variables will be determined via voting (governance). For the PoW algorithm we use John Tromp's Cuckoo Cycle which is memory bound.
+Aeternity uses a Proof-of-Work (PoW) consensus mechanism. Certain system variables will be determined via voting (governance). For the PoW algorithm we use John Tromp's Cuckoo Cycle.
 
 John Tromp writes about his work:
 
-_Cuckoo Cycle is an instantly verifiable memory bound PoW that is unique in being dominated by latency rather than computation. In that sense, mining Cuckoo Cycle is a form of ASIC mining where DRAM chips serve the application of randomly reading and writing billions of bits._
+	Cuckoo Cycle is an instantly verifiable memory bound PoW that is unique in being dominated by latency rather than computation. In that sense, mining Cuckoo Cycle is a form of ASIC mining where DRAM chips serve the application of randomly reading and writing billions of bits.
 
 The original Nakamoto consensus assumes that block propagation delays are negligible compared to the time required to generate a block. This assumption breaks once we start generating blocks every few seconds instead of minutes. Instead, we adopt GHOST, the Greedy Heaviest Observed Subtree  protocol, a more secure and scalable system that is suitable for our needs. GHOST boosts block production speedup by a factor of more than 40 with no security loss. 
 
 This protocol takes into account not just the “length” of the tree, calculated as the sum of difficulty, but the combined “length” of all blocks rooted at the current block. Blocks that are off the main chain still contribute to the chain’s irreversibility. GHOST exploits the work invested in conflicting blocks to enhance their ancestor’s security, by making it harder to omit the ancestor from the main chain.
 
-We plan to switch to an even more scalable consensus protocol in the future. 
-
 ## State Channels
 
-State channels offer a way to scale “off chain” by only storing channel opening and closing information on the blockchain. Two parties deposit tokens into a channel when opening it and the sum amount of two deposits is only amount of tokens that can be used within a channel. The state of the channel is the current balance of each party, co-signed by both parties. There can be multiple exchanges of state between the parties but only the last undisputedlast state becomes the final closing state of the channel. Each message in the channel carries an ever-increasing counter and the message with the highestr counter value is considered to be the last state.
+State channels offer a way to scale “off chain” by only storing channel opening and closing information on the blockchain. Two parties deposit tokens into a channel when opening it and the sum amount of two deposits is only amount of tokens that can be used within a channel. The state of the channel is the current balance of each party, co-signed by both parties. There can be multiple exchanges of state between the parties but only the last state becomes the final closing state of the channel, unless disputed. Each message in the channel carries an ever-increasing counter and the message with the highest counter value is considered to be the last state.
 
-We distinguish between payment and state channels. Payment channels are use a simple setup where small quantities of tokens are exchanged incrementally and there’s no conflict resolution, and true state channels that run smart contracts and resolve conflicts on the blockchain.
+We distinguish between payment and state channels. Payment channels use a simple setup where small quantities of tokens are exchanged incrementally and there’s no conflict resolution, and true state channels that run smart contracts and resolve conflicts on the blockchain.
 
 Payment channels are suitable for providing a movie playing service, where the movie player sends short chunks of video in exchange for a small payment for the next chunk. No smart contracts are involved in the setup and operation of a payment channel. Assuming that the incremental payments are small enough, a single such payment is all that a party stands to lose so no conflict resolution is required. 
 
@@ -82,7 +77,7 @@ Each channel message carries an optional “timelock” that expires a given num
 
 Each channel established between two parties (one-to-one) holds its own separate state. It’s often beneficial to establish a many-to-one channel, e.g. with many buyers connecting to a single seller. We enable this scenario by allowing the opening of state channels to off-blockchain applications. These applications can be written in any language but still need to connect to a local blockchain node to listen for and reply to state channel events.
 
-We leave state channel networks for future work.
+We leave state channel network for future work.
 
 ## Oracles
 
@@ -95,9 +90,7 @@ We do not require oracles to post a bond and we make no assumption about the rel
 Ours is the only blockchain where users can make money by creating oracles for different data feeds and we expect a thriving oracle ecosystem to develop quickly.
 
 Oracles are implemented as off-chain entities connected to their local blockchain node. Oracles listen to query transactions, fetch answers and post them back to the blockchain. Miners verify that the answer was paid for, then post it to the blockchain and feed it to the smart contract that requested it.
-
-## Smart Contracts
-
+Smart Contracts
 Despite all the security and safety issues associated with Solidity programming, it has become the most popular smart contract language in the blockchain space. We are looking to allow Solidity smart contracts to run on top of Aeternity with no modification.
 
 Aeternity blockchain nodes will not become part of the Ethereum network but we will leverage the large body of smart contract code written in Solidity and the skills of the many programmers who know how to write it.
@@ -110,7 +103,7 @@ We have no way to predict the kinds of applications that will be built on top of
 
 We provide a governance approach where users can vote on core software changes and system parameters (e.g. block size or frequency), with votes counting proportionally to the number of tokens each user is voting with.
 
-The tokens will be locked up for the period of the vote and it will not be possible to use them same tokens to vote more than once. The prevailing side will decide if the features will be implemented or rolled out, or changes to the system parameters made. This will cause a “hard fork”, with the owners of the nodes voting for the changes needing to upgrade their software.
+The tokens will be locked up for the period of the vote and it will not be possible to use these tokens for the duration of the vote. The prevailing side will decide if the features will be implemented or rolled out, or changes to the system parameters made. This will cause a “hard fork”, with the owners of the nodes voting for the changes needing to upgrade their software.
 
 ## The Multi-Asset Blockchain
 
@@ -130,5 +123,6 @@ Users will be able to send money to “Alice” or “Bob”, assuming that both
 
 ## Future Work
 
+We believe a blockchain needs to reach VISA and MasterCard throughput of thousands of transactions per second to replace those systems.  Sharding and a higher performance consensus protocol are required to make this  happen. We have evaluated the latest research and think that OmniLedger is the best direction for future work, sans UTXO and with PoW.
 
-We believe a blockchain needs to reach VISA and MasterCard throughput of thousands of transactions per second to replace those systems.  Sharding and a higher performance consensus protocol are required to make this  happen. We have evaluated the latest research and think that [Omniledger](https://eprint.iacr.org/2017/406.pdf) is the best direction for future work, sans UTXO and with PoW.
+
