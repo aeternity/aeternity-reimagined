@@ -6,7 +6,7 @@ Author: Joel Reymont
 
 [Abstract](abstract.md)  
 [Introduction](introduction.md)  
-[Overview](overview.md) 
+[Overview](overview.md)  
 [Consensus](consensus.md)  
 [State channels](state-channels.md)  
 [Oracles](oracles.md)  
