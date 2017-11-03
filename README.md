@@ -1,6 +1,8 @@
 # aeternity-reimagined
 
-The new whitepaper. Draft v0.1
+The new whitepaper. 
+
+Draft v0.1
 
 Author: Joel Reymont
 
