@@ -1,0 +1,3 @@
+Blockchain systems suffer from unreadable addresses used to access accounts, smart contracts, etc. æternity features a name system that is both decentralized and secure, and supports human-friendly names. The blockchain state includes mapping from unique human-friendly strings to hashes, digests, fingerprints and addresses. 
+
+Users will be able to send money to “Alice” or “Bob”, assuming that both Alice and Bob took the time to secure the name mapping. We will likely hold an auction for the initial registration of name mappings and may feature a market where name mappings can be bought and sold.
