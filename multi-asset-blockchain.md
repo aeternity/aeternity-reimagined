@@ -1,0 +1,7 @@
+We want to enable applications where different kinds of real-world and virtual goods can be bought and sold on top of the æternity blockchain. Let us call them "child tokens" to make it clear that they all have AE as their parent.
+
+Alice may have a fixed quantity of virtual apples that she wants to sell. She will use a simple API to define “virtual apples” token with a limited quantity, and offer to sell this token in exchange for AE. Alice will not be able to sell more virtual apples than she initially promised but users will be able to use the new virtual apples token as if it was AE. The system will automatically decrease Alice’s inventory of virtual apples and credit her account with AE as users buy virtual apples from her.
+
+Bob may want to sell real-world goods while keeping track of inventory on the æternity blockchain. Bob will set up a "new widget" token without limiting the quantity of widgets in existence. He will still be able to sell his widgets in exchange for AE. Bob will post to the blockchain the proof of availability of his real-world widgets which will allow users to confirm this before buying widget tokens from him. The æternity blockchain will serve as proof of ownership and will let widget owners trade with each other.
+
+Finally, having a built-in exchange for the child tokens should let miners and others to accept any child token as payment for their services.
