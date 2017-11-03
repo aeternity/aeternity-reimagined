@@ -1,0 +1,1 @@
+We believe blockchains need to reach VISA and MasterCard throughput of thousands of transactions per second to compete with and replace those systems. Sharding and a high-performance consensus protocols are required to make this happen. We have evaluated the latest research and believe that [Omniledger] is the best direction for future work, sans UTXO and with PoW.
