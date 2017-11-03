@@ -1,0 +1,1 @@
+This paper is broken into several parts. First we give a general overview of the system and the workings of the blockchain. Then we describe the mechanisms used for consensus, state channels, oracles and smart contracts. Finally, we describe governance by voting and the name system, then conclude with a forward outlook.
